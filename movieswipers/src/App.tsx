@@ -8,7 +8,7 @@ function App() {
 
   const fetchData = async (page: number) => {
     const movies = await fetchTopMovies(page);
-    setCards(prevCards => [...prevCards, ...movies]);
+    setCards(movies);
   };
 
   useEffect(() => {
@@ -16,8 +16,7 @@ function App() {
   }, [page]);
 
   const loadMoreMovies = () => {
-    console.log(page);
-    setPage(prevPage => prevPage + 1);
+    setPage(page + 1);
   };
 
   return (

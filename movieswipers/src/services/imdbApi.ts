@@ -9,7 +9,6 @@ const options = {
 
 export const fetchTopMovies = async (page: number) => {
   try {
-    console.log('Fetching top movies...');
     const response = await fetch(url(page), options);
     const data = await response.json();
     const movies = data.results.map((movie: any) => ({
