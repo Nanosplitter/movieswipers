@@ -1,14 +1,21 @@
-import axios from 'axios';
-
-const API_KEY = 'your_imdb_api_key';
-const BASE_URL = 'https://imdb-api.com/en/API/Top250Movies/';
+const url = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=2';
+const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwN2JhNzQwN2M1MWQyYmJiNmE4Yjk5NWUzY2Y3YTdiOCIsIm5iZiI6MTcyOTM3MDM2NC4xODAxNDIsInN1YiI6IjY3MTQxODNjOTlmMjJmMzI2YWFkMzE2MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.L5qFOnzckPJmz0RV2yS2VFl8UlEbKDn5qJvwF8Hi1-I'
+  }
+};
 
 export const fetchTopMovies = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}${API_KEY}`);
-    const movies = response.data.items.map((movie: any) => ({
-      image: movie.image,
+    const response = await fetch(url, options);
+    const data = await response.json();
+    const movies = data.results.map((movie: any) => ({
+      image: "https://image.tmdb.org/t/p/w500" + movie.poster_path,
       title: movie.title,
+      overview: movie.overview,
+      rating: movie.vote_average
     }));
     return movies;
   } catch (error) {

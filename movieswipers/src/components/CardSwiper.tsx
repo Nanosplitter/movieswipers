@@ -6,6 +6,8 @@ import Card from './Card';
 interface CardData {
   image: string;
   title: string;
+  overview: string;
+  rating: number;
 }
 
 interface CardSwiperProps {
@@ -25,7 +27,7 @@ const CardSwiper: React.FC<CardSwiperProps> = ({ cards }) => {
     <div className="card-swiper">
       {cards.map((card, index) => (
         <TinderCard key={index} onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen(card.title)} preventSwipe={['up', 'down']}>
-          <Card image={card.image} title={card.title} />
+          <Card image={card.image} title={card.title} overview={card.overview} rating={card.rating} />
         </TinderCard>
       ))}
     </div>

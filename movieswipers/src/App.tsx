@@ -3,7 +3,7 @@ import CardSwiper from './components/CardSwiper';
 import { fetchTopMovies } from './services/imdbApi';
 
 function App() {
-  const [cards, setCards] = useState<{ image: string; title: string }[]>([]);
+  const [cards, setCards] = useState<{ image: string; title: string; overview: string; rating: number; }[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
