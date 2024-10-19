@@ -1,4 +1,4 @@
-const url = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=2';
+const url = (page: number) => `https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`;
 const options = {
   method: 'GET',
   headers: {
@@ -7,9 +7,10 @@ const options = {
   }
 };
 
-export const fetchTopMovies = async () => {
+export const fetchTopMovies = async (page: number) => {
   try {
-    const response = await fetch(url, options);
+    console.log('Fetching top movies...');
+    const response = await fetch(url(page), options);
     const data = await response.json();
     const movies = data.results.map((movie: any) => ({
       image: "https://image.tmdb.org/t/p/w500" + movie.poster_path,

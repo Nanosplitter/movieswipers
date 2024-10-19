@@ -4,19 +4,25 @@ import { fetchTopMovies } from './services/imdbApi';
 
 function App() {
   const [cards, setCards] = useState<{ image: string; title: string; overview: string; rating: number; }[]>([]);
+  const [page, setPage] = useState(1);
+
+  const fetchData = async (page: number) => {
+    const movies = await fetchTopMovies(page);
+    setCards(prevCards => [...prevCards, ...movies]);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const movies = await fetchTopMovies();
-      setCards(movies);
-    };
+    fetchData(page);
+  }, [page]);
 
-    fetchData();
-  }, []);
+  const loadMoreMovies = () => {
+    console.log(page);
+    setPage(prevPage => prevPage + 1);
+  };
 
   return (
     <div className="App">
-      <CardSwiper cards={cards} />
+      <CardSwiper cards={cards} loadMoreMovies={loadMoreMovies} />
     </div>
   );
 }
