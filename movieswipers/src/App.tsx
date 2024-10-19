@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardSwiper from './components/CardSwiper';
+import { fetchTopMovies } from './services/imdbApi';
 
 function App() {
+  const [cards, setCards] = useState<{ image: string; title: string }[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const movies = await fetchTopMovies();
+      setCards(movies);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="App">
-      <CardSwiper cards={[{image: "https://www.washingtonpost.com/graphics/2019/entertainment/oscar-nominees-movie-poster-design/img/black-panther-web.jpg", title: "Black Panther"}]} />
+      <CardSwiper cards={cards} />
     </div>
   );
 }
