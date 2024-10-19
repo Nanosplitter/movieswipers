@@ -24,7 +24,7 @@ const CardSwiper: React.FC<CardSwiperProps> = ({ cards }) => {
   return (
     <div className="card-swiper">
       {cards.map((card, index) => (
-        <TinderCard onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen('fooBar')} preventSwipe={['up', 'down']}>
+        <TinderCard key={index} onSwipe={onSwipe} onCardLeftScreen={() => onCardLeftScreen(card.title)} preventSwipe={['up', 'down']}>
           <Card image={card.image} title={card.title} />
         </TinderCard>
       ))}
