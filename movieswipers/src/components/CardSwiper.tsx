@@ -16,7 +16,6 @@ interface CardSwiperProps {
 }
 
 const onSwipe = (direction: string) => {
-  console.log('You swiped: ' + direction);
 }
 
 const CardSwiper: React.FC<CardSwiperProps> = ({ cards, loadMoreMovies }) => {
