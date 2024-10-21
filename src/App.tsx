@@ -8,7 +8,7 @@ import { Button, Grid, Box, Dialog, DialogTitle, DialogContent, DialogActions, T
 import MatchDialog from './components/MatchDialog'; // Import the MatchDialog component
 
 function App() {
-  const [cards, setCards] = useState<{ image: string; title: string; overview: string; rating: number; }[]>([]);
+  const [cards, setCards] = useState<{ image: string; title: string; overview: string; rating: number; genres: string[];}[]>([]);
   const [page, setPage] = useState(1);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);

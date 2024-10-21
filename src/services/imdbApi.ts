@@ -1,4 +1,5 @@
-const url = (page: number) => `https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`;
+const movieUrl = (page: number) => `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&region=US&page=${page}&sort_by=popularity.desc`;
+const genreUrl = `https://api.themoviedb.org/3/genre/movie/list?language=en-US`;
 const options = {
   method: 'GET',
   headers: {
@@ -7,17 +8,37 @@ const options = {
   }
 };
 
+let genreMap: { [key: number]: string } = {};
+
+const fetchGenres = async () => {
+  try {
+    const response = await fetch(genreUrl, options);
+    const data = await response.json();
+    genreMap = data.genres.reduce((map: { [key: number]: string }, genre: any) => {
+      map[genre.id] = genre.name;
+      return map;
+    }, {});
+  } catch (error) {
+    console.error('Error fetching genres:', error);
+  }
+};
+
 export const fetchTopMovies = async (page: number) => {
   try {
-    const response = await fetch(url(page), options);
+    if (Object.keys(genreMap).length === 0) {
+      await fetchGenres();
+    }
+    const response = await fetch(movieUrl(page), options);
     const data = await response.json();
     const movies = data.results.map((movie: any) => ({
       image: "https://image.tmdb.org/t/p/w500" + movie.poster_path,
       title: movie.title,
       overview: movie.overview,
-      rating: movie.vote_average
+      rating: movie.vote_average,
+      genres: movie.genre_ids.map((id: number) => genreMap[id])
     }));
-    return movies;
+    console.log('Fetched top movies:', movies);
+    return movies.reverse();
   } catch (error) {
     console.error('Error fetching top movies:', error);
     return [];
