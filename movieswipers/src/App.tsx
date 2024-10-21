@@ -4,6 +4,7 @@ import { fetchTopMovies } from './services/imdbApi';
 import { db } from './services/firebase';
 import { collection, addDoc, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
 import Modal from './components/Modal'; // Import the modal component
+import { Button, Grid, Box, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material'; // Import Material UI components
 
 function App() {
   const [cards, setCards] = useState<{ image: string; title: string; overview: string; rating: number; }[]>([]);
@@ -11,6 +12,8 @@ function App() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false); // State to control join dialog visibility
+  const [joinSessionId, setJoinSessionId] = useState(''); // State to store the session ID entered by the user
 
   const fetchData = async (page: number) => {
     const movies = await fetchTopMovies(page);
@@ -75,8 +78,20 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={createSession}>Create Session</button>
-      <button onClick={() => joinSession(prompt('Enter session ID:') || '')}>Join Session</button>
+      <Box sx={{ p: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item>
+            <Button variant="contained" color="primary" onClick={createSession}>
+              Create Session
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="secondary" onClick={() => setIsJoinDialogOpen(true)}>
+              Join Session
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
       <CardSwiper cards={cards} loadMoreMovies={loadMoreMovies} onSwipe={handleSwipe} />
       <Modal
         isOpen={isModalOpen}
@@ -84,6 +99,25 @@ function App() {
         sessionId={sessionId || ''}
         copyToClipboard={copyToClipboard}
       />
+      <Dialog open={isJoinDialogOpen} onClose={() => setIsJoinDialogOpen(false)}>
+        <DialogTitle>Join Session</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Session ID"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={joinSessionId}
+            onChange={(e) => setJoinSessionId(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsJoinDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => { joinSession(joinSessionId); setIsJoinDialogOpen(false); }}>Join</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
