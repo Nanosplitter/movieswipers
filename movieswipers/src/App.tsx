@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import CardSwiper from './components/CardSwiper';
 import { fetchTopMovies } from './services/imdbApi';
 import { db } from './services/firebase';
-import { collection, addDoc, getDocs, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
+import Modal from './components/Modal'; // Import the modal component
 
 function App() {
   const [cards, setCards] = useState<{ image: string; title: string; overview: string; rating: number; }[]>([]);
   const [page, setPage] = useState(1);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
 
   const fetchData = async (page: number) => {
     const movies = await fetchTopMovies(page);
@@ -23,6 +25,14 @@ function App() {
     setPage(page + 1);
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Session ID copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  };
+
   const createSession = async () => {
     const sessionRef = await addDoc(collection(db, 'sessions'), {
       createdAt: new Date(),
@@ -30,6 +40,9 @@ function App() {
     setSessionId(sessionRef.id);
     const userRef = await addDoc(collection(db, 'sessions', sessionRef.id, 'users'), {});
     setUserId(userRef.id);
+
+    // Open modal with session ID
+    setIsModalOpen(true);
   };
 
   const joinSession = async (sessionId: string) => {
@@ -46,10 +59,16 @@ function App() {
       [movieTitle]: direction,
     });
 
-    const q = query(collection(db, 'sessions', sessionId, 'users'), where(movieTitle, '==', direction));
+    // Query to check if all users have swiped right for the given movie title
+    const q = query(collection(db, 'sessions', sessionId, 'users'), where(movieTitle, '==', 'right'));
     const querySnapshot = await getDocs(q);
 
-    if (querySnapshot.size > 1) {
+    // Check if the number of users who swiped right matches the total number of users
+    const totalUsersRef = collection(db, 'sessions', sessionId, 'users');
+    const totalUsersSnapshot = await getDocs(totalUsersRef);
+
+    // Ensure a match is found only if all users have swiped right
+    if (querySnapshot.size === totalUsersSnapshot.size && querySnapshot.size > 0) {
       console.log(`Match found for movie: ${movieTitle}`);
     }
   };
@@ -59,6 +78,12 @@ function App() {
       <button onClick={createSession}>Create Session</button>
       <button onClick={() => joinSession(prompt('Enter session ID:') || '')}>Join Session</button>
       <CardSwiper cards={cards} loadMoreMovies={loadMoreMovies} onSwipe={handleSwipe} />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        sessionId={sessionId || ''}
+        copyToClipboard={copyToClipboard}
+      />
     </div>
   );
 }

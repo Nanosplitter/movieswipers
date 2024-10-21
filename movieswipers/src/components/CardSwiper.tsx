@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import TinderCard from 'react-tinder-card';
 import './CardSwiper.css';
 import Card from './Card';
-import { db } from '../services/firebase';
-import { collection, addDoc, getDocs, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
+// import { db } from '../services/firebase';
+// import { collection, addDoc, getDocs, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
 
 interface CardData {
   image: string;
