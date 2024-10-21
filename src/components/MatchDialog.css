@@ -1,0 +1,14 @@
+.match-dialog {
+  text-align: center;
+}
+
+.match-dialog img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.match-dialog h2 {
+  margin-top: 0;
+  text-align: center;
+}

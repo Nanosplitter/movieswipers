@@ -15,7 +15,7 @@ interface CardData {
 interface CardSwiperProps {
   cards: CardData[];
   loadMoreMovies: () => void;
-  onSwipe: (direction: string, movieTitle: string) => void;
+  onSwipe: (direction: string, movieTitle: string, movieImage: string) => void;
 }
 
 const CardSwiper: React.FC<CardSwiperProps> = ({ cards, loadMoreMovies, onSwipe }) => {
@@ -38,7 +38,7 @@ const CardSwiper: React.FC<CardSwiperProps> = ({ cards, loadMoreMovies, onSwipe 
   return (
     <div className="card-swiper">
       {cardList.map((card, index) => (
-        <TinderCard key={index} onSwipe={(dir) => onSwipe(dir, card.title)} onCardLeftScreen={() => onCardLeftScreen(card.title)} preventSwipe={['up', 'down']}>
+        <TinderCard key={index} onSwipe={(dir) => onSwipe(dir, card.title, card.image)} onCardLeftScreen={() => onCardLeftScreen(card.title)} preventSwipe={['up', 'down']}>
           <Card image={card.image} title={card.title} overview={card.overview} rating={card.rating} />
         </TinderCard>
       ))}
