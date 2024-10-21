@@ -1,5 +1,5 @@
 import React from 'react';
-import './Modal.css'; // Create a CSS file for styling the modal
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,17 +9,17 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, sessionId, copyToClipboard }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Session Created</h2>
+    <Dialog open={isOpen} onClose={onClose}>
+      <DialogTitle>Session Created</DialogTitle>
+      <DialogContent>
         <p>Session ID: {sessionId}</p>
-        <button onClick={() => copyToClipboard(sessionId)}>Copy Session ID</button>
-        <button onClick={onClose}>Close</button>
-      </div>
-    </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => copyToClipboard(sessionId)}>Copy Session ID</Button>
+        <Button onClick={onClose}>Close</Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
