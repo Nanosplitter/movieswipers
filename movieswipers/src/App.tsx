@@ -14,6 +14,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false); // State to control join dialog visibility
   const [joinSessionId, setJoinSessionId] = useState(''); // State to store the session ID entered by the user
+  const [isMatchDialogOpen, setIsMatchDialogOpen] = useState(false);
 
   const fetchData = async (page: number) => {
     const movies = await fetchTopMovies(page);
@@ -73,7 +74,12 @@ function App() {
     // Ensure a match is found only if all users have swiped right
     if (querySnapshot.size === totalUsersSnapshot.size && querySnapshot.size > 0) {
       console.log(`Match found for movie: ${movieTitle}`);
+      setIsMatchDialogOpen(true); //
     }
+  };
+
+  const handleMatchDialogClose = () => {
+    setIsMatchDialogOpen(false);
   };
 
   return (
@@ -116,6 +122,15 @@ function App() {
         <DialogActions>
           <Button onClick={() => setIsJoinDialogOpen(false)}>Cancel</Button>
           <Button onClick={() => { joinSession(joinSessionId); setIsJoinDialogOpen(false); }}>Join</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={isMatchDialogOpen} onClose={handleMatchDialogClose}>
+        <DialogTitle>Match Found</DialogTitle>
+        <DialogContent>
+          <p>A match has been found!</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleMatchDialogClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </div>
