@@ -29,12 +29,12 @@ const Card: React.FC<CardProps> = ({ image, title, overview, rating, genres }) =
             </Typography>
           ))}
         </Box>
-        <Typography variant="body2" color="text.secondary">
+        <p>
           {overview}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+        </p>
+        <p>
           Rating: {rating} / 10
-        </Typography>
+        </p>
       </CardContent>
     </MuiCard>
   );

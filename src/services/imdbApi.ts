@@ -1,4 +1,5 @@
-const movieUrl = (page: number) => `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&region=US&page=${page}&sort_by=popularity.desc`;
+const movieUrl = (page: number) => `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&region=US&page=${page}&sort_by=popularity.desc&without_genres=27&with_release_type=3|4|5`; // `27` is the genre ID for Horror
+const trendingUrl = (page: number) => `https://api.themoviedb.org/3/trending/movie/week?page=${page}&without_genres=27&with_release_type=3|4|5`; // Adjust trending as well
 const genreUrl = `https://api.themoviedb.org/3/genre/movie/list?language=en-US`;
 const options = {
   method: 'GET',
@@ -23,22 +24,70 @@ const fetchGenres = async () => {
   }
 };
 
-export const fetchTopMovies = async (page: number) => {
+// Fetch popular movies
+const fetchPopularMovies = async (page: number) => {
   try {
-    if (Object.keys(genreMap).length === 0) {
-      await fetchGenres();
-    }
     const response = await fetch(movieUrl(page), options);
     const data = await response.json();
-    const movies = data.results.map((movie: any) => ({
+    return data.results.map((movie: any) => ({
+      id: movie.id,
       image: "https://image.tmdb.org/t/p/w500" + movie.poster_path,
       title: movie.title,
       overview: movie.overview,
       rating: movie.vote_average,
       genres: movie.genre_ids.map((id: number) => genreMap[id])
     }));
-    console.log('Fetched top movies:', movies);
-    return movies.reverse();
+  } catch (error) {
+    console.error('Error fetching popular movies:', error);
+    return [];
+  }
+};
+
+// Fetch trending movies
+const fetchTrendingMovies = async (page: number) => {
+  try {
+    const response = await fetch(trendingUrl(page), options);
+    const data = await response.json();
+    return data.results.map((movie: any) => ({
+      id: movie.id,
+      image: "https://image.tmdb.org/t/p/w500" + movie.poster_path,
+      title: movie.title,
+      overview: movie.overview,
+      rating: movie.vote_average,
+      genres: movie.genre_ids.map((id: number) => genreMap[id])
+    }));
+  } catch (error) {
+    console.error('Error fetching trending movies:', error);
+    return [];
+  }
+};
+
+// Combine and return mixed movie results
+export const fetchTopMovies = async (page: number) => {
+  try {
+    if (Object.keys(genreMap).length === 0) {
+      await fetchGenres();
+    }
+    
+    const popularMovies = await fetchPopularMovies(page);
+    const trendingMovies = await fetchTrendingMovies(page);
+
+    // Combine both sets and remove duplicates by movie ID
+    const combinedMovies = [...popularMovies, ...trendingMovies];
+    const uniqueMovies = Array.from(new Map(combinedMovies.map(movie => [movie.id, movie])).values());
+
+    // Optionally shuffle to add randomness
+    uniqueMovies.sort(() => Math.random() - 0.5);
+
+    // Adjust weight of horror movies (reduce occurrence but don't remove)
+    const filteredMovies = uniqueMovies.filter(movie => !movie.genres.includes('Horror'));
+    const horrorMovies = uniqueMovies.filter(movie => movie.genres.includes('Horror'));
+
+    // Include fewer horror movies (e.g., 1 out of every 5)
+    const finalMovies = [...filteredMovies, ...horrorMovies.slice(0, Math.ceil(filteredMovies.length / 5))];
+
+    console.log('Fetched mixed top movies:', finalMovies);
+    return finalMovies.reverse(); // Return in reverse order for display
   } catch (error) {
     console.error('Error fetching top movies:', error);
     return [];

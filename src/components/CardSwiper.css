@@ -35,7 +35,7 @@
   object-fit: contain;
 }
 
-.card h2, .card p {
+.card h5, .card p {
   margin: 0;
   padding: 10px;
   text-align: center;
@@ -48,6 +48,7 @@
 
 .card p {
   font-size: 1rem;
+  color: #000;
 }
 
 .swipe-left {
@@ -57,3 +58,4 @@
 .swipe-right {
   transform: translateX(100%) rotate(20deg);
 }
+
